@@ -1,5 +1,4 @@
 // SolarSystem class creates and manages the Sun, planets, orbits, and animation
-import * as THREE from 'three';
 import { PLANETS, MOONS } from './planets.js';
 import planetTextures from './assets/planet-textures.json';
 

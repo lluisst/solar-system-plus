@@ -1,5 +1,4 @@
 // Handles planet label creation and updating
-import * as THREE from 'three';
 import { PLANETS } from './planets.js';
 import { getPlanetNameLocalized } from './ui.js';
 

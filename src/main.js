@@ -1,5 +1,4 @@
 // Entry point for Solar System Plus
-import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SolarSystem } from './solarSystem.js';
 import { UI } from './ui.js';

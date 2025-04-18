@@ -1,6 +1,5 @@
 import { PLANETS, MOONS } from './planets.js';
 import { PLANET_DATA } from './planetData.js';
-import * as THREE from 'three';
 
 // UI module for Solar System Plus
 const LOCALIZATION = {
