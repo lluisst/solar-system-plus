@@ -1,5 +1,4 @@
 // Overlay for displaying planet info on hover/click
-import * as THREE from 'three';
 import { PLANET_DATA } from './planetData.js';
 
 // Entire PlanetInfoOverlay class is now disabled to avoid overlay conflicts with UI.js overlay
