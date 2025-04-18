@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Solar System Plus</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="src/planet-overlay.css" />
+</head>
+<body>
+  <div id="ui">
+    <label for="speedRange">Time Speed:</label>
+    <input type="range" id="speedRange" min="-5" max="5" step="0.1" value="1">
+    <span id="speedValue">1x</span>
+    <label><input type="checkbox" id="toggleTrails"> Show Orbit Trails</label>
+  </div>
+  <div id="ui-container"></div>
+  <div id="container"></div>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

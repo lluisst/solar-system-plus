@@ -1,0 +1,58 @@
+.planet-overlay {
+  position: fixed;
+  top: 32px;
+  right: 32px;
+  left: auto;
+  transform: none;
+  background: rgba(20, 20, 30, 0.97);
+  color: white;
+  z-index: 10010;
+  min-width: 320px;
+  max-width: 90vw;
+  border-radius: 12px;
+  box-shadow: 0 4px 32px 8px #000b;
+  padding: 1.2em 1.2em 0.8em 1.2em;
+  font-size: 0.98em;
+  pointer-events: auto;
+  text-align: left;
+}
+
+.planet-overlay h2 {
+  font-size: 1.18em;
+  margin-bottom: 0.5em;
+  text-align: left;
+}
+
+.planet-overlay ul {
+  font-size: 0.97em;
+  text-align: left;
+}
+
+.planet-overlay .surface-img-container {
+  margin-top: 0.7em;
+  text-align: left;
+}
+
+.planet-overlay .surface-img-container img {
+  max-width: 220px;
+  max-height: 120px;
+  display: block;
+  margin: 0 0 0 0;
+  background: #111;
+  border-radius: 8px;
+}
+
+.planet-overlay .surface-float-img {
+  float: right;
+  max-width: 110px;
+  max-height: 70px;
+  margin: 0 0 0.5em 1em;
+  background: #111;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px #0008;
+}
+
+.planet-overlay button.ui-btn {
+  margin: 1em 0.5em 0 0.5em;
+  font-size: 0.95em;
+}
