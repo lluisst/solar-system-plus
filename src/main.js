@@ -1,43 +1,138 @@
 // Entry point for Solar System Plus
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { SolarSystem } from './solarSystem.js';
-import { UI } from './ui.js';
-import { PlanetLabels } from './labels.js';
-import { PLANETS, MOONS, PLANET_FACTS, MOON_FACTS } from './planets.js';
+// Eliminem els imports, ara tot és global
 
+// Definim variables globals que es poden utilitzar des d'altres scripts
 let renderer, scene, camera, controls, solarSystem, ui, planetLabels;
-let timeControlMode = 'play';
-window._timeControlMode = timeControlMode;
+let lastFrameTime = performance.now();
+
+// --- Lògica de control de temps centralitzada ---
+window._timeControlMode = 'play';
+window.timeSpeed = 1;
+
+function getEffectiveTimeDelta() {
+  const now = performance.now();
+  let dt = (now - lastFrameTime) * 0.001; // segons
+  lastFrameTime = now;
+  let speed = window.timeSpeed;
+  switch (window._timeControlMode) {
+    case 'pause':
+      return 0;
+    case 'rewind':
+      return -Math.abs(speed * dt);
+    case 'fastforward':
+      return Math.abs(speed * 3 * dt);
+    case 'play':
+    default:
+      return speed * dt;
+  }
+}
+
+function updateSpeedValue(val) {
+  document.getElementById('speedValue').textContent = val + 'x';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const speedSlider = document.getElementById('speedRange');
+  if (speedSlider) {
+    speedSlider.addEventListener('input', function(e) {
+      window.timeSpeed = parseFloat(e.target.value);
+      updateSpeedValue(window.timeSpeed);
+    });
+    updateSpeedValue(speedSlider.value);
+  }
+});
+
+// Fem init explicitament disponible a window per poder cridar-lo des d'index.html
+window.init = init;
 
 function init() {
+  console.log('[INIT] Iniciant Solar System Plus');
+  
+  // Logs globals
+  console.log('[INIT] PLANETS:', typeof PLANETS, Array.isArray(PLANETS) ? PLANETS.length : 'No és un array');
+  console.log('[INIT] PLANET_DATA:', typeof PLANET_DATA);
+  console.log('[INIT] SolarSystem:', typeof SolarSystem);
+  console.log('[INIT] PlanetLabels:', typeof PlanetLabels);
+  console.log('[INIT] UI:', typeof UI);
+
   // Renderer
-  renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  document.getElementById('container').appendChild(renderer.domElement);
+  try {
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('container').appendChild(renderer.domElement);
+    console.log('[INIT] Renderer creat');
+  } catch(e) {
+    console.error('[ERROR] Error creant renderer:', e);
+    return;
+  }
 
   // Scene
   scene = new THREE.Scene();
+  console.log('[INIT] Scene creada');
 
   // Camera
   camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 10000);
   camera.position.set(0, 200, 700);
   window._camera = camera;
+  console.log('[INIT] Camera creada');
 
   // Controls
-  controls = new OrbitControls(camera, renderer.domElement);
+  if (typeof THREE.OrbitControls !== 'function') {
+    console.error('[ERROR] THREE.OrbitControls no està definit!');
+    return;
+  }
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
   window._controls = controls;
   controls.enableDamping = true;
   controls.dampingFactor = 0.05;
   controls.enablePan = true;
+  console.log('[INIT] Controls creats');
+
+  // Verificar classes i variables globals
+  console.log("PLANETS global:", typeof PLANETS, Array.isArray(PLANETS) ? PLANETS.length : 'No és un array');
+  console.log("SolarSystem global:", typeof SolarSystem);
+  console.log("PlanetLabels global:", typeof PlanetLabels);
+  console.log("UI global:", typeof UI);
 
   // Solar System
-  solarSystem = new SolarSystem(scene);
+  if (typeof SolarSystem !== 'function') {
+    console.error('[ERROR] SolarSystem no està definit!');
+    return;
+  }
+  try {
+    solarSystem = new SolarSystem(scene);
+    console.log('[INIT] SolarSystem creat');
+  } catch(e) {
+    console.error('[ERROR] Error creant SolarSystem:', e);
+    console.error('[ERROR] Detalls:', e.message, e.stack);
+    return;
+  }
 
   // Planet Labels
-  planetLabels = new PlanetLabels(scene, camera, renderer, solarSystem.planetMeshes);
+  if (typeof PlanetLabels !== 'function') {
+    console.error('[ERROR] PlanetLabels no està definit!');
+    return;
+  }
+  try {
+    planetLabels = new PlanetLabels(scene, camera, renderer, solarSystem.planetMeshes);
+    console.log('[INIT] PlanetLabels creats');
+  } catch(e) {
+    console.error('[ERROR] Error creant PlanetLabels:', e);
+    return;
+  }
 
   // UI
-  ui = new UI(solarSystem);
+  if (typeof UI !== 'function') {
+    console.error('[ERROR] UI no està definit!');
+    return;
+  }
+  try {
+    ui = new UI(solarSystem);
+    console.log('[INIT] UI creat');
+  } catch(e) {
+    console.error('[ERROR] Error creant UI:', e);
+    return;
+  }
 
   // Remove or override old overlay logic and ensure all userData is set
   function onPointerMove(event) {
@@ -66,6 +161,7 @@ function init() {
   window.addEventListener('pointermove', onPointerMove);
 
   window.addEventListener('resize', onWindowResize);
+  console.log('[INIT] Inicialització completada - començant animació');
   animate();
 }
 
@@ -75,28 +171,25 @@ function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
+// --- Animació ---
 function animate() {
   requestAnimationFrame(animate);
-  let dt = ui.getTimeDelta();
-  // Time control logic
-  switch (window._timeControlMode) {
-    case 'pause':
-      dt = 0;
-      break;
-    case 'rewind':
-      dt = -Math.abs(dt) * 2;
-      break;
-    case 'fastforward':
-      dt = Math.abs(dt) * 4;
-      break;
-    default:
-      // play
-      break;
+  if (!renderer || !scene || !camera) {
+    console.error('[ERROR] Components essencials no inicialitzats');
+    return;
   }
-  controls.update();
-  solarSystem.update(dt * ui.speed);
-  planetLabels.update();
+
+  if (controls) controls.update();
+  if (planetLabels) planetLabels.update();
+  if (solarSystem) {
+    const dt = getEffectiveTimeDelta();
+    solarSystem.update(dt);
+  }
   renderer.render(scene, camera);
 }
 
-init();
+// Inicia l'aplicació quan el DOM estigui llest
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('[LOG] DOM Content Loaded - Inicialitzant...');
+  // No cridem init aquí, deixem que es cridi des d'index.html
+});

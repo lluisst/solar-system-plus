@@ -1,5 +1,5 @@
 // Basic data for each planet for educational overlay
-export const PLANET_DATA = {
+const PLANET_DATA = {
   Mercury: {
     name: 'Mercury',
     diameter: '4,880 km',

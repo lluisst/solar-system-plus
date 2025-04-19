@@ -1,5 +1,5 @@
 // Data for the Sun and planets: relative sizes, orbits, colors, and speeds
-export const PLANETS = [
+const PLANETS = [
   {
     name: 'Mercury',
     radius: 2.4,
@@ -78,7 +78,7 @@ export const PLANETS = [
 ];
 
 // Updated moon sizes and orbits proportional to parent planet radii
-export const MOONS = {
+const MOONS = {
   Earth: [
     { name: 'Moon', radius: 1.7, orbitRadius: 12, orbitSpeed: 0.08, color: 0xbbbbbb, inclination: 5.1 }
   ],
@@ -100,7 +100,7 @@ export const MOONS = {
 };
 
 // Add more detailed facts for planets and moons
-export const PLANET_FACTS = {
+const PLANET_FACTS = {
   Mercury: [
     'Smallest planet in the Solar System',
     'No moons',
@@ -143,7 +143,7 @@ export const PLANET_FACTS = {
   ]
 };
 
-export const MOON_FACTS = {
+const MOON_FACTS = {
   Moon: [
     'Fifth largest moon in the Solar System',
     'Causes tides on Earth',

@@ -1,8 +1,26 @@
 // SolarSystem class creates and manages the Sun, planets, orbits, and animation
-import { PLANETS, MOONS } from './planets.js';
-import planetTextures from './assets/planet-textures.json';
+// Eliminem imports, ara tot és global
 
-export class SolarSystem {
+// Substituïm el fetch per una variable global
+let planetTextures = {};
+fetch('src/assets/planet-textures.json')
+  .then(response => {
+    if (!response.ok) {
+      console.error('[ERROR] No s\'ha pogut carregar planet-textures.json:', response.status);
+      return {};
+    }
+    return response.json();
+  })
+  .then(json => {
+    planetTextures = json;
+    console.log('[LOG] planetTextures carregat:', planetTextures);
+  })
+  .catch(err => {
+    console.error('[ERROR] Error carregant planet-textures.json:', err);
+  });
+
+// Eliminem export
+class SolarSystem {
   constructor(scene) {
     this.scene = scene;
     this.planets = [];
@@ -13,6 +31,7 @@ export class SolarSystem {
     this.trails = [];
     this.time = 0;
     this.textureLoader = new THREE.TextureLoader();
+    console.log('[LOG] Constructor SolarSystem. PLANETS:', typeof PLANETS, PLANETS);
     this.createSun();
     this.createPlanets();
     this.createMoons();
@@ -32,7 +51,13 @@ export class SolarSystem {
   }
 
   createPlanets() {
+    if (!PLANETS) {
+      console.error('[ERROR] PLANETS no està definit!');
+      return;
+    }
+    console.log('[LOG] Creant planetes...');
     PLANETS.forEach((planet, i) => {
+      console.log(`[LOG] Creant planeta: ${planet.name}`);
       // Planet mesh
       const geometry = new THREE.SphereGeometry(planet.radius, 32, 32);
       let material;

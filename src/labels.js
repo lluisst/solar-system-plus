@@ -1,8 +1,7 @@
 // Handles planet label creation and updating
-import { PLANETS } from './planets.js';
-import { getPlanetNameLocalized } from './ui.js';
+// PlanetLabels class manages labels for planets in the scene
 
-export class PlanetLabels {
+class PlanetLabels {
   constructor(scene, camera, renderer, planetMeshes) {
     this.labels = [];
     this.scene = scene;
@@ -35,8 +34,24 @@ export class PlanetLabels {
     });
   }
   update() {
+    // Comprova que les dades necessàries existeixen
+    if (!PLANETS || !this.planetMeshes || !Array.isArray(this.planetMeshes)) {
+      console.error('[ERROR] PlanetLabels.update: PLANETS o planetMeshes no està disponible');
+      return;
+    }
+
     PLANETS.forEach((planet, i) => {
-      const pos = this.planetMeshes[i].position.clone();
+      if (!this.planetMeshes[i] || !this.labels[i]) {
+        return; // Salta si no existeix el planeta o l'etiqueta
+      }
+      
+      const mesh = this.planetMeshes[i];
+      if (!mesh.position) {
+        console.error(`[ERROR] Mesh del planeta ${planet.name} no té position`);
+        return;
+      }
+      
+      const pos = mesh.position.clone();
       pos.project(this.camera);
       const x = (pos.x * 0.5 + 0.5) * this.renderer.domElement.clientWidth;
       const y = (1 - (pos.y * 0.5 + 0.5)) * this.renderer.domElement.clientHeight;

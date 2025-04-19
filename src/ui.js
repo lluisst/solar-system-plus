@@ -1,6 +1,3 @@
-import { PLANETS, MOONS } from './planets.js';
-import { PLANET_DATA } from './planetData.js';
-
 // UI module for Solar System Plus
 const LOCALIZATION = {
   en: {
@@ -119,7 +116,7 @@ const PLANET_DESCRIPTION_LOCALIZATION = {
   }
 };
 
-export function getPlanetNameLocalized(name, lang) {
+function getPlanetNameLocalized(name, lang) {
   return (PLANET_NAME_LOCALIZATION[lang] && PLANET_NAME_LOCALIZATION[lang][name]) || name;
 }
 
@@ -147,10 +144,9 @@ function updateStaticUITexts() {
 
 function getOverlayHtml(name, isMoon, L, N) {
   const safeName = name.toLowerCase().replace(/\s+/g, '');
-  const imgPath1 = `assets/${safeName}_surface.jpg`;
-  const imgPath2 = `src/assets/${safeName}_surface.jpg`;
+  const imgPath = `src/assets/${safeName}_surface.jpg`;
   // Imatge flotant a la dreta
-  const imgHtml = `<img class=\"surface-float-img\" src=\"${imgPath1}\" alt=\"Surface of ${name}\" onerror=\"this.onerror=null;this.src='${imgPath2}';this.onerror=function(){this.style.display='none';}\">`;
+  const imgHtml = `<img class=\"surface-float-img\" src=\"${imgPath}\" alt=\"Surface of ${name}\" onerror=\"this.style.display='none';\">`;
   if (!isMoon && PLANET_DATA[name]) {
     const d = PLANET_DATA[name];
     const desc = getPlanetDescriptionLocalized(name, window._appLang || 'en');
@@ -172,7 +168,7 @@ function getOverlayHtml(name, isMoon, L, N) {
   }
 }
 
-export class UI {
+class UI {
   constructor(solarSystem) {
     this.solarSystem = solarSystem;
     this.container = document.getElementById('ui-container');
@@ -184,8 +180,8 @@ export class UI {
     this.speedInput = document.getElementById('speedRange');
     this.speedValue = document.getElementById('speedValue');
     this.trailsCheckbox = document.getElementById('toggleTrails');
-    this.speed = 1;
     this.lastTime = performance.now();
+    // Neteja: no mantenim this.speed, només window.timeSpeed
     this.speedInput.addEventListener('input', () => this.updateSpeed());
     this.trailsCheckbox.addEventListener('change', () => this.toggleTrails());
     this.updateSpeed();
@@ -195,8 +191,8 @@ export class UI {
   }
 
   updateSpeed() {
-    this.speed = parseFloat(this.speedInput.value);
-    this.speedValue.textContent = `${this.speed}x`;
+    window.timeSpeed = parseFloat(this.speedInput.value);
+    this.speedValue.textContent = `${window.timeSpeed}x`;
   }
 
   toggleTrails() {
@@ -205,7 +201,7 @@ export class UI {
 
   getTimeDelta() {
     const now = performance.now();
-    const dt = ((now - this.lastTime) * 0.001) * this.speed;
+    const dt = ((now - this.lastTime) * 0.001) * window.timeSpeed;
     this.lastTime = now;
     return dt;
   }
